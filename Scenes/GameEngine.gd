@@ -30,3 +30,15 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+
+# Handle UI
+func renderUI():
+	var ui = get_node('UI')
+	
+	if gameLogicHandler.logicHandler.selection == gameLogicHandler.SELECT_STATE.SELECT_UNIT:
+		ui.toggleAttackButton(true)
+		
+	else:
+		ui.toggleAttackButton(false)
+		

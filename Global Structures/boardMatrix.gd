@@ -120,8 +120,8 @@ class BoardMatrix:
 				var ydelta = newChildNode.get_node('CollisionShape2D').shape.extents[1]
 				
 				# Define the location of this node
-				newChildNode.position.x = (xdelta ) + 2 * xdelta * i
-				newChildNode.position.y = (ydelta ) + 2 * xdelta * j
+				newChildNode.position.x = 80 + (xdelta ) + 2 * xdelta * i
+				newChildNode.position.y = 30 + (ydelta ) + 2 * xdelta * j
 				
 				# To highlight the difference in nodes, we need to
 				# slightly alter the color.

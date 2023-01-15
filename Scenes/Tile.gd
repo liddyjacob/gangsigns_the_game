@@ -33,5 +33,13 @@ func _on_Tile_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed:
 	# Handle the selection of this matrix tile
 		gameLogicHandler.logicHandler.handleSelect(matrixTile)
+		get_tree().get_root().get_node('MainScene').renderUI()
+		print()
+		
+	# handle hover highlighting
+	if event is InputEventMouseMotion:
+		# really only affects attack / placement
+		gameLogicHandler.logicHandler.handleHover(matrixTile)
+		
 	
 	pass # Replace with function body.

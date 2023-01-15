@@ -21,8 +21,19 @@ class GameLogic:
 
 	# handle an attack request
 	func handleAttack():
+		if self.locationInFocus == null:
+			push_error("Attempting an attack init without a tile selected!")
+		if not self.locationInFocus.hasUnit():
+			push_error("Attempting an attack on an empty tile!")
+		
+		self.selection = SELECT_STATE.SELECT_ATTACK
+		
+		self.render()
+	# do not attacl anymore.
+	func handleCancelAttack():
 		pass
-
+		
+		
 
 	# handle the logic in here, not in the tile.gd script
 	func handleSelect(matrixPiece):
@@ -59,7 +70,9 @@ class GameLogic:
 				self.selection = SELECT_STATE.SELECT_NONE
 		#	self.locationInFocus = matrixPiece
 			
-			
+	func handleHover(matrixPiece):
+		pass
+		
 		
 	func render():
 		self.resetRenders()

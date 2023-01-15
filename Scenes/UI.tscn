@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/UI.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/rocknroll.jpg" type="Texture" id=2]
+
+[node name="UI" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_top = 486.0
+margin_right = 1024.0
+margin_bottom = 600.0
+rect_pivot_offset = Vector2( 36.8735, 10.308 )
+color = Color( 0.12549, 0.172549, 0.227451, 1 )
+
+[node name="AttackButton" type="Button" parent="."]
+visible = false
+margin_left = 35.1611
+margin_top = 511.78
+margin_right = 659.161
+margin_bottom = 1129.78
+rect_scale = Vector2( 0.1, 0.1 )
+rect_pivot_offset = Vector2( -5.11652, 0.214508 )
+icon = ExtResource( 2 )
+flat = true
+[connection signal="pressed" from="AttackButton" to="." method="_on_AttackButton_pressed"]
