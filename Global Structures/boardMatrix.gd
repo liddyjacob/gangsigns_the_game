@@ -1,10 +1,33 @@
 extends Node
 
+# a gangsign can be one of a select few polyominos
+class GangSign:
+	func _init():
+		pass
+
+# A unit has a team and a gangsign. also a texture.
+class Unit:
+	var texture 
+	var teamid : int
+	var gangsign : GangSign
+	
+	func _init(texture, teamid, gangsign):
+		self.texture = texture
+		self.teamid = teamid
+		self.gangsign = gangsign
+		
+		
+	
+	
+	
+
+
 # an element of the matrix
 class MatrixPiece:
 	var i : int
 	var j : int
 	
+	var highlighted : bool = false
 	#var owner : Player  = null
 	
 	# where to render this matrix piece?
@@ -13,12 +36,15 @@ class MatrixPiece:
 	
 	var node : Node
 	
-	var hasUnit : bool
+	var unit : Unit = null
 	
 	func _init(i, j):
 		self.i = i
 		self.j = j
-		print(str(self.i) + ", " + str(self.i))
+
+	func hasUnit():
+		return self.unit != null
+
 	
 	# attach a node to this matrix piece
 	func attachNode(assocNode):
@@ -27,11 +53,22 @@ class MatrixPiece:
 		# attach a node to this piece
 		# or vise versa.
 		
-	func placeUnit(unitTexture):
-		self.node.placeUnit(unitTexture)
-		self.hasUnit = true
+	func placeUnit(unit):
+		self.node.placeUnit(unit)
+		self.unit = unit
 		
-	# associate this 
+	func removeUnit():
+		var old_unit = self.unit
+		self.unit = null
+		self.node.removeUnit()
+		return old_unit
+		
+		
+		
+	func toggleHighlight(toggle):
+		self.highlighted = toggle
+		self.node.toggleHighlight(toggle)
+	# associate 
 
 
 class BoardMatrix:
@@ -59,9 +96,9 @@ class BoardMatrix:
 			push_error("Missing configure file: res:///gameconfig.cfg")
 		
 		self.boardSize = config.get_value(self.mode, "boardSize")
+
 		
 	func buildmatrix():
-		print('hello')
 		for i in range(self.boardSize[0]):
 			internalMatrix.append([])
 			for j in range(self.boardSize[1]):
@@ -91,12 +128,16 @@ class BoardMatrix:
 				if (i + j) % 2:
 					newChildNode.get_node('Sprite').modulate = Color(1,1,1)
 					
-				
-				print(newChildNode.position.x)
 				#newChildNode.position.y = 100
 				
 				# Add the node to the matrix
 				internalMatrix[i][j].attachNode(newChildNode)
+	
+	# Toggle highlights off.
+	func resetAllRenders():
+		for i in range(self.boardSize[0]):
+			for j in range(self.boardSize[1]):
+				internalMatrix[i][j].toggleHighlight(false)
 	
 	func get_tile(i, j):
 		return internalMatrix[i][j]

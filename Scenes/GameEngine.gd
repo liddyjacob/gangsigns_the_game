@@ -16,7 +16,8 @@ func _ready():
 	boardMatrix.boardSingleton.fillMatrix(tileScene, map)
 	
 	var loadedUnitTexture = preload("res://Sprites/robot.png")
-	boardMatrix.boardSingleton.get_tile(5,5).placeUnit(loadedUnitTexture)
+	var new_unit = boardMatrix.Unit.new(loadedUnitTexture, 1, null)
+	boardMatrix.boardSingleton.get_tile(5,5).placeUnit(new_unit)
 
 	# Works! Now lets create
 
