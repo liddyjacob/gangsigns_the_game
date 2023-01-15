@@ -16,6 +16,9 @@ func _ready():
 	boardMatrix.boardSingleton.fillMatrix(tileScene, map)
 	
 	var loadedUnitTexture = preload("res://Sprites/robot.png")
+	var gangsigncoords = [Vector2(0,0), Vector2(1,0), Vector2(2,0), Vector2(3,0),
+		Vector2(1,-1), Vector2(3,-1)]
+	var gangsign = boardMatrix.GangSign.new(gangsigncoords)
 	var new_unit = boardMatrix.Unit.new(loadedUnitTexture, 1, null)
 	boardMatrix.boardSingleton.get_tile(5,5).placeUnit(new_unit)
 
@@ -38,7 +41,13 @@ func renderUI():
 	
 	if gameLogicHandler.logicHandler.selection == gameLogicHandler.SELECT_STATE.SELECT_UNIT:
 		ui.toggleAttackButton(true)
+		ui.toggleAttackOpts(false)
+		return
 		
-	else:
+	if gameLogicHandler.logicHandler.selection == gameLogicHandler.SELECT_STATE.SELECT_ATTACK:
 		ui.toggleAttackButton(false)
+		ui.toggleAttackOpts(true)
+		return
 		
+	ui.toggleAttackButton(false)
+	ui.toggleAttackOpts(false)

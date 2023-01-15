@@ -2,8 +2,18 @@ extends Node
 
 # a gangsign can be one of a select few polyominos
 class GangSign:
-	func _init():
+	var base
+	
+	func _init(polyomino):
+		self.base = polyomino
 		pass
+	
+	#func rotate()
+		
+	# What is the shape of the gang sign with the coordinates
+	func shape(rotations, flipped):
+		return self.base
+		
 
 # A unit has a team and a gangsign. also a texture.
 class Unit:

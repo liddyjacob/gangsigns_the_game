@@ -31,6 +31,8 @@ class GameLogic:
 		self.render()
 	# do not attacl anymore.
 	func handleCancelAttack():
+		self.selection = SELECT_STATE.SELECT_UNIT
+		self.render()
 		pass
 		
 		

@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scenes/UI.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/rocknroll.jpg" type="Texture" id=2]
+[ext_resource path="res://Sprites/cancel.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/rotate.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/mirror.png" type="Texture" id=5]
 
 [node name="UI" type="Control"]
 anchor_right = 1.0
@@ -25,4 +28,37 @@ rect_scale = Vector2( 0.1, 0.1 )
 rect_pivot_offset = Vector2( -5.11652, 0.214508 )
 icon = ExtResource( 2 )
 flat = true
+
+[node name="CancelButton" type="Button" parent="."]
+visible = false
+margin_left = 35.1611
+margin_top = 511.78
+margin_right = 947.161
+margin_bottom = 1417.78
+rect_scale = Vector2( 0.067, 0.067 )
+rect_pivot_offset = Vector2( -5.11652, 0.214508 )
+icon = ExtResource( 3 )
+flat = true
+
+[node name="RotateButton" type="Button" parent="."]
+visible = false
+margin_left = 132.876
+margin_top = 510.986
+margin_right = 504.876
+margin_bottom = 876.986
+rect_scale = Vector2( 0.17, 0.17 )
+rect_pivot_offset = Vector2( -5.11652, 0.214508 )
+icon = ExtResource( 4 )
+
+[node name="ReflectButton" type="Button" parent="."]
+visible = false
+margin_left = 229.796
+margin_top = 511.383
+margin_right = 466.796
+margin_bottom = 742.383
+rect_scale = Vector2( 0.27, 0.27 )
+rect_pivot_offset = Vector2( -5.11652, 0.214508 )
+icon = ExtResource( 5 )
+flat = true
 [connection signal="pressed" from="AttackButton" to="." method="_on_AttackButton_pressed"]
+[connection signal="pressed" from="CancelButton" to="." method="_on_CancelButton_pressed"]
