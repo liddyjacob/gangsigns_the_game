@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/GameEngine.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/Tile.tscn" type="PackedScene" id=2]
+
+[node name="MainScene" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Map" type="Node" parent="."]
+
+[node name="Tile" parent="Map" instance=ExtResource( 2 )]
+visible = false
