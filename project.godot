@@ -21,6 +21,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+colorHandler="*res://Global Structures/colorHandler.gd"
 boardMatrix="*res://Global Structures/boardMatrix.gd"
 Player="*res://Global Structures/Player.gd"
 gameLogicHandler="*res://Global Structures/gameLogicHandler.gd"

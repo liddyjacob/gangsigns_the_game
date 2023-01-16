@@ -1,5 +1,7 @@
 extends Node
 
+
+
 # a gangsign can be one of a select few polyominos
 class GangSign:
 	var base
@@ -15,19 +17,24 @@ class GangSign:
 		return self.base
 		
 
-# A unit has a team and a gangsign. also a texture.
+# A unit has a team and a gangsign. and a team
 class Unit:
-	var texture 
-	var teamid : int
+	var teamid : String
 	var gangsign : GangSign
 	
-	func _init(texture, teamid, gangsign):
-		self.texture = texture
+	func _init(teamid, gangsign):
+		
 		self.teamid = teamid
 		self.gangsign = gangsign
 		
+	func palettePrimary():
+		return colorHandler.getColor(self.teamid, 'unit1')
+
+	func paletteSecondry():
+		return colorHandler.getColor(self.teamid, 'unit2')
 		
-	
+	func paletteAntennae():
+		return colorHandler.getColor(self.teamid, 'unit3')
 	
 	
 
@@ -36,6 +43,9 @@ class Unit:
 class MatrixPiece:
 	var i : int
 	var j : int
+	var tileid : int
+	# What team does this belong to
+	var teamid : String = "neutral"
 	
 	var highlighted : bool = false
 	#var owner : Player  = null
@@ -48,9 +58,11 @@ class MatrixPiece:
 	
 	var unit : Unit = null
 	
-	func _init(i, j):
+	func _init(i, j, tileid):
 		self.i = i
 		self.j = j
+		self.tileid = tileid
+		self.teamid = "neutral"
 
 	func hasUnit():
 		return self.unit != null
@@ -60,6 +72,9 @@ class MatrixPiece:
 	func attachNode(assocNode):
 		self.node = assocNode
 		assocNode.matrixTile = self
+		print('color:')
+		print(self.palette())
+		assocNode.colorTile(self.palette())
 		# attach a node to this piece
 		# or vise versa.
 		
@@ -72,12 +87,26 @@ class MatrixPiece:
 		self.unit = null
 		self.node.removeUnit()
 		return old_unit
+
+	func palette():
+		return colorHandler.getColor(self.teamid, 'tile' + str(self.tileid))
 		
+	# Apply temporary color to board
+	func applyTempColor(teamid):
+		var temp_color = colorHandler.getColor(teamid, 'tiletemp' + str(self.tileid))
+		self.node.colorTile(temp_color)
 		
+	func applyOriginalColor():
+		var orig_color = self.palette()
+		self.node.colorTile(orig_color)
 		
 	func toggleHighlight(toggle):
 		self.highlighted = toggle
 		self.node.toggleHighlight(toggle)
+		
+	# Reset color to whatever it's 'original value' is
+	func toggleColor(mode):
+		pass
 	# associate 
 
 
@@ -112,7 +141,7 @@ class BoardMatrix:
 		for i in range(self.boardSize[0]):
 			internalMatrix.append([])
 			for j in range(self.boardSize[1]):
-				internalMatrix[i].append(MatrixPiece.new(i, j))
+				internalMatrix[i].append(MatrixPiece.new(i, j, 1 + ((i + j) % 2)))
 
 	# Fill matrix with a node, assign a parent node,
 	# locate the matrix
@@ -133,11 +162,6 @@ class BoardMatrix:
 				newChildNode.position.x = 80 + (xdelta ) + 2 * xdelta * i
 				newChildNode.position.y = 30 + (ydelta ) + 2 * xdelta * j
 				
-				# To highlight the difference in nodes, we need to
-				# slightly alter the color.
-				if (i + j) % 2:
-					newChildNode.get_node('Sprite').modulate = Color(1,1,1)
-					
 				#newChildNode.position.y = 100
 				
 				# Add the node to the matrix
@@ -148,8 +172,14 @@ class BoardMatrix:
 		for i in range(self.boardSize[0]):
 			for j in range(self.boardSize[1]):
 				internalMatrix[i][j].toggleHighlight(false)
+				#internalMatrix[i][j].toggleColor('original')
 	
 	func get_tile(i, j):
+		if (i < 0 || j < 0):
+			return null
+		if (i >= self.boardSize[0] || j >= self.boardSize[1]):
+			return null
+			
 		return internalMatrix[i][j]
 	
 	func fillWithNode():

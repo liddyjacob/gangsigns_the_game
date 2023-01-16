@@ -33,3 +33,13 @@ func _on_CancelButton_pressed():
 	gameLogicHandler.logicHandler.handleCancelAttack()
 	get_tree().get_root().get_node('MainScene').renderUI()
 	pass # Replace with function body.
+
+
+func _on_Dummy_toggled(button_pressed):
+
+	pass # Replace with function body.
+
+
+func _on_Dummy_pressed():
+	print("dummy pressed")
+	pass # Replace with function body.

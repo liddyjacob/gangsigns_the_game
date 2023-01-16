@@ -14,6 +14,9 @@ class GameLogic:
 	var selection = SELECT_STATE.SELECT_NONE
 	var locationInFocus = null
 	
+	# not game logic.
+	var gangsignHoverRegistry = []
+	
 	func _init():
 		self.board = boardMatrix.boardSingleton
 		pass
@@ -29,6 +32,7 @@ class GameLogic:
 		self.selection = SELECT_STATE.SELECT_ATTACK
 		
 		self.render()
+	
 	# do not attacl anymore.
 	func handleCancelAttack():
 		self.selection = SELECT_STATE.SELECT_UNIT
@@ -70,16 +74,72 @@ class GameLogic:
 		if ! matrixPiece.highlighted:
 			if self.selection != SELECT_STATE.SELECT_ATTACK:
 				self.selection = SELECT_STATE.SELECT_NONE
+				
+		# deal with attacking:
+		if self.selection == SELECT_STATE.SELECT_ATTACK:
+			# See of this is a valid location for this gangsign
+			var attackTiles = self.validateAttackLocation(matrixPiece)
+			
+			# invalid move
+			if attackTiles == []:
+				return
+			else:
+				for tile in attackTiles:
+					tile.teamid = self.locationInFocus.unit.teamid
+				self.selection = SELECT_STATE.SELECT_NONE
+				self.locationInFocus = null
 		#	self.locationInFocus = matrixPiece
 			
 	func handleHover(matrixPiece):
+		if self.selection != SELECT_STATE.SELECT_ATTACK:
+			return
+		
+		# Use locationinfocus with matrixpiece to render a hover
+		self.renderHover(matrixPiece)
+		print('handling hover...')
 		pass
+		
+		
+		# Render pieces back to their original color.
+	func handleHoverExit(matrixPiece):
+		if self.selection != SELECT_STATE.SELECT_ATTACK:
+			return
+		self.renderHoverExit(matrixPiece)
+		print('handling hover exit...')
+		pass
+	
+	func validateAttackLocation(matrixPiece):
+		var teamid = self.locationInFocus.unit.teamid
+		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(0,0)
+		
+		# Get all of the locations for this gangsign
+		var gangsignTiles = []
+		for delta in gangsignPattern:
+			var currTile = self.board.get_tile(matrixPiece.i + delta[0], matrixPiece.j + delta[1])
+			
+			# No out of bounds
+			if currTile == null:
+				return []
+				
+			# No painting on self
+			if currTile == self.locationInFocus:
+				return []
+				
+			# No painting on own team:
+			if currTile.teamid == teamid:
+				return []
+			
+			# Action allowed at this point:
+			gangsignTiles.append(currTile)
+		
+		return gangsignTiles
 		
 		
 	func render():
 		self.resetRenders()
 		self.resolveSelection()
-	
+		self.renderBoard()
+		
 	func resetRenders():
 		self.board.resetAllRenders()
 	
@@ -95,14 +155,49 @@ class GameLogic:
 		#
 		#self.render_end_turn()
 		#
-			
+		
+	# Make everything on the board it's proper color	
+	func renderBoard():
+		for i in self.board.boardSize[0]:
+			for j in self.board.boardSize[1]:
+				self.board.get_tile(i, j).applyOriginalColor()
+		
 			
 	func renderMovements():
 		var movements = self.getPossibleDestinations()
 		
 		for tile in movements:
 			tile.toggleHighlight(true)
+		
+	func renderHover(matrixPiece):
+		# Color these blocks temporarily
+		var teamid = self.locationInFocus.unit.teamid
+		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(0,0)
+		
+		var gangsignTiles = validateAttackLocation(matrixPiece)
+		# Get all of the locations for this gangsign
+
+		self.gangsignHoverRegistry = gangsignTiles
+		
+		for tile in gangsignTiles:
+			tile.applyTempColor(teamid)
+		
+		# Hold these colors : Do not let exit render modify them!
+		self.gangsignHoverRegistry = gangsignTiles
 			
+		pass
+		
+	func renderHoverExit(matrixPiece):
+		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(0,0)
+		for delta in gangsignPattern:
+			var currTile = self.board.get_tile(matrixPiece.i + delta[0], matrixPiece.j + delta[1])
+			if currTile in gangsignHoverRegistry:
+				continue
+				
+			if currTile != null:
+				currTile.applyOriginalColor()
+		pass
+		
 		
 	# Make an attack button on unit selection:
 	func renderUIBar():

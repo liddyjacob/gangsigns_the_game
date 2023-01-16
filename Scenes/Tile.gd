@@ -7,14 +7,21 @@ var matrixTile
 
 
 
-onready var UnitPlaceholder = get_node("UnitPlaceholder")
+
 onready var HighlightPlaceholder = get_node("HighlightPlaceholder")
+onready var RobotModel = get_node("RobotModel")
+onready var TileInterior = get_node("TileInterior")
+
 func placeUnit(unit):
-	UnitPlaceholder.texture = unit.texture
-
+	RobotModel.visible = true
+	# Set up the robot model:
+	RobotModel.color(unit)
+	
 func removeUnit():
-	UnitPlaceholder.texture = null
+	RobotModel.visible = false
 
+func colorTile(color):
+	TileInterior.modulate = color
 	
 	
 func toggleHighlight(toggle):
@@ -22,6 +29,7 @@ func toggleHighlight(toggle):
 	
 #func toggleColor(color):
 	
+
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -34,12 +42,14 @@ func _on_Tile_input_event(viewport, event, shape_idx):
 	# Handle the selection of this matrix tile
 		gameLogicHandler.logicHandler.handleSelect(matrixTile)
 		get_tree().get_root().get_node('MainScene').renderUI()
-		print()
-		
-	# handle hover highlighting
-	if event is InputEventMouseMotion:
-		# really only affects attack / placement
-		gameLogicHandler.logicHandler.handleHover(matrixTile)
-		
-	
+
+
+
+func _on_Tile_mouse_entered():
+	gameLogicHandler.logicHandler.handleHover(matrixTile)
+	pass # Replace with function body.
+
+
+func _on_Tile_mouse_exited():
+	gameLogicHandler.logicHandler.handleHoverExit(matrixTile)
 	pass # Replace with function body.
