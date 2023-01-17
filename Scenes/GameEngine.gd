@@ -13,13 +13,18 @@ func _ready():
 	var tileScene = load("res://Scenes/Tile.tscn")
 	
 	boardMatrix.boardSingleton.fillMatrix(tileScene, map)
-	print('goodbye')
 	var gangsigncoords = [Vector2(0,0), Vector2(1,0), Vector2(2,0), Vector2(3,0),
 		Vector2(1,-1), Vector2(3,-1)]
 	var gangsign = boardMatrix.GangSign.new(gangsigncoords)
 	var new_unit = boardMatrix.Unit.new("player1", gangsign)
 	boardMatrix.boardSingleton.get_tile(5,5).placeUnit(new_unit)
-	print('goodbye')
+
+	var gangsigncoords2 = [Vector2(0,0), Vector2(1,0), Vector2(2,0), Vector2(3,0),
+		Vector2(1,-1), Vector2(1,-2)]
+	var gangsign2 = boardMatrix.GangSign.new(gangsigncoords2)
+	var new_unit2 = boardMatrix.Unit.new("player2", gangsign2)
+	boardMatrix.boardSingleton.get_tile(18,5).placeUnit(new_unit2)
+
 	# Works! Now lets create
 
 
