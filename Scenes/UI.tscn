@@ -49,6 +49,7 @@ margin_bottom = 876.986
 rect_scale = Vector2( 0.17, 0.17 )
 rect_pivot_offset = Vector2( -5.11652, 0.214508 )
 icon = ExtResource( 4 )
+flat = true
 
 [node name="ReflectButton" type="Button" parent="."]
 visible = false

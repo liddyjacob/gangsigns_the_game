@@ -14,7 +14,6 @@ class GangSign:
 		
 	# What is the shape of the gang sign with the coordinates
 	func shape(rotations, flipped):
-		print(self.base)
 		var curr_shape = self.base
 		for i in range(0, rotations):
 			var next_shape = []

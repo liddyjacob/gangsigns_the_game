@@ -5,7 +5,7 @@ extends Node
 
 # Useful to see what the user is intending on doing
 # None -> UnitSelected implies moving
-enum SELECT_STATE {SELECT_NONE, SELECT_UNIT, SELECT_TILE, SELECT_ATTACK}
+enum SELECT_STATE {SELECT_NONE, SELECT_UNIT, SELECT_ATTACK}
 
 
 
@@ -15,6 +15,12 @@ class GameLogic:
 	var locationInFocus = null
 	var reflected : bool = false
 	var rotations : int = 0
+	
+	var players = ['player1', 'player2']
+	
+	# Each player gets two turns
+	var currPlayerIndex : int = 0
+	var movesLeft : int = 2
 	
 	# not game logic.
 	var gangsignHoverRegistry = []
@@ -60,11 +66,22 @@ class GameLogic:
 		
 		# react to the current state, send signals to any location we need to
 		self.render()
+		
+	# Player has moved. what next?
+	func countMove():
+		self.movesLeft = self.movesLeft - 1
+		if (self.movesLeft == 0):
+			self.movesLeft = 2
+			self.currPlayerIndex = (1 + self.currPlayerIndex) % (len(players))
+			
 
 	func _handleSelectHelper(matrixPiece):
 		# Select unit if not attacking
 		if matrixPiece.hasUnit():
 			if self.selection != SELECT_STATE.SELECT_ATTACK:
+				if matrixPiece.unit.teamid != self.players[self.currPlayerIndex]:
+					return
+				
 				self.selection = SELECT_STATE.SELECT_UNIT
 				# This location is now 'in focus'
 				self.locationInFocus = matrixPiece
@@ -79,7 +96,7 @@ class GameLogic:
 				self.locationInFocus = null
 				matrixPiece.placeUnit(unit)
 				self.selection = SELECT_STATE.SELECT_NONE
-				
+				self.countMove()
 				
 				
 		if ! matrixPiece.highlighted:
@@ -101,6 +118,8 @@ class GameLogic:
 				self.locationInFocus = null
 				self.reflected = false
 				self.rotations = 0
+				# Attacked, so a move should lapse
+				self.countMove()
 		#	self.locationInFocus = matrixPiece
 			
 	func handleHover(matrixPiece):
@@ -175,6 +194,9 @@ class GameLogic:
 		# See if we need to highlight any tiles
 		self.renderMovements()
 		
+		# See if the unit needs highlighted
+		self.renderUnitHighlight()
+		
 		self.renderUIBar()
 		#
 		#self.render_attack()
@@ -193,7 +215,12 @@ class GameLogic:
 		var movements = self.getPossibleDestinations()
 		
 		for tile in movements:
-			tile.toggleHighlight(true)
+			if tile != null:
+				tile.toggleHighlight(true)
+			
+	func renderUnitHighlight():
+		if self.selection == SELECT_STATE.SELECT_ATTACK:
+			self.locationInFocus.toggleHighlight(true)
 		
 	func renderHover(matrixPiece):
 		# Color these blocks temporarily
@@ -212,6 +239,7 @@ class GameLogic:
 		self.gangsignHoverRegistry = gangsignTiles
 			
 		pass
+		
 		
 	func renderHoverExit(matrixPiece):
 		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(self.rotations,self.reflected)
@@ -246,10 +274,6 @@ class GameLogic:
 				
 			
 		
-				
-			
-			
-		pass
 		
 
 
