@@ -14,7 +14,25 @@ class GangSign:
 		
 	# What is the shape of the gang sign with the coordinates
 	func shape(rotations, flipped):
-		return self.base
+		print(self.base)
+		var curr_shape = self.base
+		for i in range(0, rotations):
+			var next_shape = []
+			for block in curr_shape:
+				next_shape.append(Vector2(-block[1], block[0]))
+				
+			curr_shape = next_shape
+		
+
+				
+		if flipped:
+			var next_shape = []
+			for block in curr_shape:
+				next_shape.append(Vector2(-block[0], block[1]))
+			
+			curr_shape = next_shape
+			
+		return curr_shape
 		
 
 # A unit has a team and a gangsign. and a team
@@ -72,8 +90,6 @@ class MatrixPiece:
 	func attachNode(assocNode):
 		self.node = assocNode
 		assocNode.matrixTile = self
-		print('color:')
-		print(self.palette())
 		assocNode.colorTile(self.palette())
 		# attach a node to this piece
 		# or vise versa.

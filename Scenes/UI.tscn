@@ -62,3 +62,5 @@ icon = ExtResource( 5 )
 flat = true
 [connection signal="pressed" from="AttackButton" to="." method="_on_AttackButton_pressed"]
 [connection signal="pressed" from="CancelButton" to="." method="_on_CancelButton_pressed"]
+[connection signal="pressed" from="RotateButton" to="." method="_on_RotateButton_pressed"]
+[connection signal="pressed" from="ReflectButton" to="." method="_on_ReflectButton_pressed"]

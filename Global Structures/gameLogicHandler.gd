@@ -13,6 +13,8 @@ class GameLogic:
 	var board
 	var selection = SELECT_STATE.SELECT_NONE
 	var locationInFocus = null
+	var reflected : bool = false
+	var rotations : int = 0
 	
 	# not game logic.
 	var gangsignHoverRegistry = []
@@ -39,6 +41,15 @@ class GameLogic:
 		self.render()
 		pass
 		
+	func handleRotate():
+		if self.reflected:
+			self.rotations = (self.rotations - 1) % 4
+		else: 
+			self.rotations = (self.rotations + 1) % 4
+	
+	func handleReflect():
+		self.reflected = !self.reflected
+		#self.rotations = (-self.rotations) % 4
 		
 
 	# handle the logic in here, not in the tile.gd script
@@ -81,13 +92,15 @@ class GameLogic:
 			var attackTiles = self.validateAttackLocation(matrixPiece)
 			
 			# invalid move
-			if attackTiles == []:
+			if attackTiles == [] || ! self.validateAttackTouchesPlayer(attackTiles):
 				return
 			else:
 				for tile in attackTiles:
 					tile.teamid = self.locationInFocus.unit.teamid
 				self.selection = SELECT_STATE.SELECT_NONE
 				self.locationInFocus = null
+				self.reflected = false
+				self.rotations = 0
 		#	self.locationInFocus = matrixPiece
 			
 	func handleHover(matrixPiece):
@@ -96,8 +109,6 @@ class GameLogic:
 		
 		# Use locationinfocus with matrixpiece to render a hover
 		self.renderHover(matrixPiece)
-		print('handling hover...')
-		pass
 		
 		
 		# Render pieces back to their original color.
@@ -105,12 +116,11 @@ class GameLogic:
 		if self.selection != SELECT_STATE.SELECT_ATTACK:
 			return
 		self.renderHoverExit(matrixPiece)
-		print('handling hover exit...')
 		pass
 	
 	func validateAttackLocation(matrixPiece):
 		var teamid = self.locationInFocus.unit.teamid
-		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(0,0)
+		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(self.rotations,self.reflected)
 		
 		# Get all of the locations for this gangsign
 		var gangsignTiles = []
@@ -134,6 +144,22 @@ class GameLogic:
 		
 		return gangsignTiles
 		
+	func validateAttackTouchesPlayer(gangsignTiles):
+		for gangTile in gangsignTiles:
+			if (gangTile.i == self.locationInFocus.i - 1) and \
+			  (gangTile.j == self.locationInFocus.j):
+				return true
+			if (gangTile.i == self.locationInFocus.i + 1) and \
+			  (gangTile.j == self.locationInFocus.j):
+				return true
+			if (gangTile.i == self.locationInFocus.i) and \
+			  (gangTile.j == self.locationInFocus.j - 1):
+				return true
+			if (gangTile.i == self.locationInFocus.i ) and \
+			  (gangTile.j == self.locationInFocus.j + 1):
+				return true
+
+		return false
 		
 	func render():
 		self.resetRenders()
@@ -172,7 +198,7 @@ class GameLogic:
 	func renderHover(matrixPiece):
 		# Color these blocks temporarily
 		var teamid = self.locationInFocus.unit.teamid
-		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(0,0)
+		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(self.rotations, self.reflected)
 		
 		var gangsignTiles = validateAttackLocation(matrixPiece)
 		# Get all of the locations for this gangsign
@@ -188,7 +214,7 @@ class GameLogic:
 		pass
 		
 	func renderHoverExit(matrixPiece):
-		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(0,0)
+		var gangsignPattern = self.locationInFocus.unit.gangsign.shape(self.rotations,self.reflected)
 		for delta in gangsignPattern:
 			var currTile = self.board.get_tile(matrixPiece.i + delta[0], matrixPiece.j + delta[1])
 			if currTile in gangsignHoverRegistry:
@@ -209,8 +235,6 @@ class GameLogic:
 		# Empty list of movements if a unit is not selected.
 		if self.selection != SELECT_STATE.SELECT_UNIT:
 			return []
-		
-		print(self.selection)
 		
 		var i = self.locationInFocus.i
 		var j = self.locationInFocus.j
